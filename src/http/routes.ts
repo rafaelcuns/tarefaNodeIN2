@@ -5,11 +5,9 @@ import { verifyJWT } from "./middlewares/verify-jwt";
 
 export function appRoutes(app: FastifyInstance) {
     app.post('/usuarios', criarUsuario) // Password digest e e-mail igual
-    app.post('/posts', criarPost)
     app.get('/usuarios', pegarUsuarios)
     app.get('/posts', pegarPosts)
-    app.delete('/usuarios/:id', deletarUsuario)
-    app.delete('/posts/:id', deletarPost)
+    
     app.patch('/usuarios/:id', atualizarUsuario)
     app.patch('/posts/:id', atualizarPost)
     app.get('/usuarios/:id', listarUsuario)
@@ -20,4 +18,7 @@ export function appRoutes(app: FastifyInstance) {
     // Autenticado
 
     app.get('/perfil', {onRequest: [verifyJWT]}, mostrarPerfil)
+    app.post('/posts', {onRequest: [verifyJWT]}, criarPost)
+    app.delete('/usuarios/:id', {onRequest: [verifyJWT]}, deletarUsuario)
+    app.delete('/posts/:id', {onRequest: [verifyJWT]}, deletarPost)
 }

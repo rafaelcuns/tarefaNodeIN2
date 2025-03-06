@@ -45,6 +45,11 @@ export async function pegarUsuarios(request: FastifyRequest, reply: FastifyReply
 export async function deletarUsuario(request: FastifyRequest, reply: FastifyReply) { // Cascade
     const { id: idString } = z.object({id: z.string()}).parse(request.params)
     const id = parseInt(idString, 10);
+
+    if (id !== Number(request.user.sub)) {
+        return reply.status(403).send("Não é permitido apagar outros usuários")
+    }
+
     const delet = await prisma.usuario.delete({
         where: {
             id: id

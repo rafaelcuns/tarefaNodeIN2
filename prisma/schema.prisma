@@ -14,43 +14,44 @@ datasource db {
 }
 
 model Usuario {
-  id    Int    @id @default(autoincrement())
-  nome String
-  email String @unique
-  senha String
-  foto  String
-  posts Post[]
+  id          Int          @id @default(autoincrement())
+  nome        String
+  email       String       @unique
+  senha       String
+  foto        String
+  posts       Post[]
   comentarios Comentario[]
-  likes Like[]
+  likes       Like[]
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
-  conteudo  String
-  criado_em DateTime
-  id_usuario Int
-	usuario Usuario @relation(fields: [id_usuario], references: [id], onDelete: Cascade)
+  id          Int          @id @default(autoincrement())
+  titulo      String
+  conteudo    String
+  criado_em   DateTime
+  id_usuario  Int
+  usuario     Usuario      @relation(fields: [id_usuario], references: [id], onDelete: Cascade)
   comentarios Comentario[]
-  likes Like[]
+  likes       Like[]
 }
 
 model Comentario {
-  id Int @id @default(autoincrement())
-  criado_em DateTime
+  id         Int      @id @default(autoincrement())
+  criado_em  DateTime
   id_usuario Int
-  id_post Int
-  usuario Usuario @relation(fields: [id_usuario], references: [id], onDelete: Cascade)
-  post Post @relation(fields: [id_post], references: [id], onDelete: Cascade)
-  likes Like[]
+  id_post    Int
+  usuario    Usuario  @relation(fields: [id_usuario], references: [id], onDelete: Cascade)
+  post       Post     @relation(fields: [id_post], references: [id], onDelete: Cascade)
+  likes      Like[]
 }
 
 model Like {
-  id Int @id @default(autoincrement())
-  criado_em DateTime
-  id_usuario Int
-  id_post Int
+  id            Int        @id @default(autoincrement())
+  criado_em     DateTime
+  id_usuario    Int
+  id_post       Int
   id_comentario Int
-  usuario Usuario @relation(fields: [id_usuario], references: [id], onDelete: Cascade)
-  post Post @relation(fields: [id_post], references: [id], onDelete: Cascade)
-  comentario Comentario @relation(fields: [id_comentario], references: [id], onDelete: Cascade)
+  usuario       Usuario    @relation(fields: [id_usuario], references: [id], onDelete: Cascade)
+  post          Post       @relation(fields: [id_post], references: [id], onDelete: Cascade)
+  comentario    Comentario @relation(fields: [id_comentario], references: [id], onDelete: Cascade)
 }
