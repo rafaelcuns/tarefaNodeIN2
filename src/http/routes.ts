@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
-import { atualizarUsuario, criarUsuario, deletarUsuario, listarUsuario, pegarUsuarios } from './controllers/usuarios'
+import { atualizarUsuario, criarUsuario, deletarUsuario, entrar, listarUsuario, mostrarPerfil, pegarUsuarios } from './controllers/usuarios'
 import { atualizarPost, criarPost, deletarPost, listarPost, listarPostUsuario, pegarPosts } from "./controllers/posts";
+import { verifyJWT } from "./middlewares/verify-jwt";
 
 export function appRoutes(app: FastifyInstance) {
     app.post('/usuarios', criarUsuario) // Password digest e e-mail igual
@@ -14,4 +15,9 @@ export function appRoutes(app: FastifyInstance) {
     app.get('/usuarios/:id', listarUsuario)
     app.get('/posts/:id', listarPost)
     app.get('/posts/usuario/:id', listarPostUsuario)
+    app.post('/entrar', entrar)
+
+    // Autenticado
+
+    app.get('/perfil', {onRequest: [verifyJWT]}, mostrarPerfil)
 }

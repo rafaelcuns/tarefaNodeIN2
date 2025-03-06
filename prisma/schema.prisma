@@ -20,6 +20,8 @@ model Usuario {
   senha String
   foto  String
   posts Post[]
+  comentarios Comentario[]
+  likes Like[]
 }
 
 model Post {
@@ -28,4 +30,27 @@ model Post {
   criado_em DateTime
   id_usuario Int
 	usuario Usuario @relation(fields: [id_usuario], references: [id], onDelete: Cascade)
+  comentarios Comentario[]
+  likes Like[]
+}
+
+model Comentario {
+  id Int @id @default(autoincrement())
+  criado_em DateTime
+  id_usuario Int
+  id_post Int
+  usuario Usuario @relation(fields: [id_usuario], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [id_post], references: [id], onDelete: Cascade)
+  likes Like[]
+}
+
+model Like {
+  id Int @id @default(autoincrement())
+  criado_em DateTime
+  id_usuario Int
+  id_post Int
+  id_comentario Int
+  usuario Usuario @relation(fields: [id_usuario], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [id_post], references: [id], onDelete: Cascade)
+  comentario Comentario @relation(fields: [id_comentario], references: [id], onDelete: Cascade)
 }

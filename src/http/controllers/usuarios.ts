@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify"
-import {z} from "zod"
+import {string, z} from "zod"
 import {prisma} from "@/src/lib/prisma"
-import { hash } from "bcryptjs"
+import { compare, hash } from "bcryptjs"
 
 export async function criarUsuario(request: FastifyRequest, reply: FastifyReply) {
     const usuarioSchema = z.object({
@@ -85,4 +85,57 @@ export async function listarUsuario(request: FastifyRequest, reply: FastifyReply
         }
     });
     reply.send(usuario);
+}
+
+export async function entrar(request: FastifyRequest, reply: FastifyReply) {
+    const loginSchema = z.object({
+        email: z.string().email(),
+        senha: z.string()
+    })
+    const { email, senha } = loginSchema.parse(request.body)
+    
+    const usuario = await prisma.usuario.findUnique({
+        where: {
+            email
+        }
+    })
+    // const usuario = await prisma.$executeRaw`SELECT * FROM 'Usuario' WHERE "email" = ${email}`
+    if (!usuario) {
+        return reply.status(404).send("Usuário não encontrado")
+    }
+
+    const senhasIguais = await compare(senha, usuario.senha)
+    if (!senhasIguais) {
+        return reply.status(401).send("Senha incorreta")
+    }
+
+    const token = await reply.jwtSign({}, {
+        sign: {
+            sub: String(usuario.id)
+        }
+    })
+
+    const refreshToken = await reply.jwtSign({}, {
+        sign: {
+             sub: String(usuario.id),
+             expiresIn: '7d'
+        }
+   })
+
+    return reply.status(200).send({ token })
+}
+
+export async function mostrarPerfil(request: FastifyRequest, reply: FastifyReply) {
+    const usuario = await prisma.usuario.findFirst({
+        where: {
+            id: Number(request.user.sub)
+        }
+    })
+
+    return reply.status(200).send({
+        usuario: {
+            ...usuario,
+            senha: undefined
+        }
+    })
 }
